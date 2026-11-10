@@ -84,15 +84,16 @@ export async function POST(req: NextRequest) {
     const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
     const objectKey = `uploads/${Date.now()}-${cleanName}`;
 
+    const buffer = Buffer.from(await file.arrayBuffer());
+
     if (!bucket || !accessKey || !secretKey) {
-      const simulatedUrl = `https://constructora-erp.s3.${region}.amazonaws.com/${objectKey}`;
+      const mimeType = file.type || "application/octet-stream";
+      const dataUrl = `data:${mimeType};base64,${buffer.toString("base64")}`;
       return NextResponse.json({
-        url: simulatedUrl,
-        mode: "simulated",
+        url: dataUrl,
+        mode: "local",
       });
     }
-
-    const buffer = Buffer.from(await file.arrayBuffer());
     const host = `${bucket}.s3.${region}.amazonaws.com`;
     const now = new Date();
     const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
