@@ -12,10 +12,10 @@ import {
 } from "@/types";
 
 function getServiceUrl(envUrl: string | undefined, port: number): string {
-  if (envUrl) return envUrl;
-  if (typeof window !== "undefined") {
-    return `${window.location.protocol}//${window.location.hostname}:${port}`;
+  if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+    return "";
   }
+  if (envUrl) return envUrl;
   return `http://localhost:${port}`;
 }
 
